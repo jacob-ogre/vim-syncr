@@ -15,11 +15,6 @@ function usage {
 #############################################################################
 # The script itself...
 #############################################################################
-echo $1
-echo $2
-echo $3
-echo $4
-
 if [ $1 == "--help" ] || [ $# -ne 4 ]; then
     usage;
 fi
@@ -31,8 +26,8 @@ rsync \
 
 rc=$?
 if [[ $rc == 0 ]]; then
-    echo -e "${grn}\n\t$1 sync'd with remote.${ncl}";
+    echo -e "${grn}\nFile:\n\t$1\nsync'd locally from remote.${ncl}";
 else
-    echo -e "${red}\n\tSync with remote failed.${ncl}";
+    echo -e "${red}\nSync with remote failed for\n\t$1.${ncl}";
 fi
 
