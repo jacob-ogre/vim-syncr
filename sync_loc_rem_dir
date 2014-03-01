@@ -2,21 +2,23 @@
 #
 # A bash script that syncs a local directory's contents to a remote target.
 
+# Colors for later:
+red='\x1b[0;31m'
+grn='\x1b[0;32m'
+ncl='\x1b[0m'
+
 #############################################################################
 # A couple of handler functions
 #############################################################################
 function usage {
-    echo -e "\nUSAGE:\n\tsync_loc_rem <local_dir> <path_on_stampede>\n";
-    echo -e "NOTE: Do NOT add a trailing '\\' to paths.";
+    echo -e "\nUSAGE:\n\tsync_loc_rem_dir <loc_dir> <rem_dir> <user> <host> \n";
+    echo -e "NOTE: Do NOT add a trailing '/' to paths.";
     exit;
 }
 
 function clean_rsync_verbose {
     # Simplify the rsync varbose output.
     # NOTE: if on linux, change \x1b in color defs red,grn,ncl to \e
-    red='\x1b[0;31m'
-    grn='\x1b[0;32m'
-    ncl='\x1b[0m'
     cat $1 | while read line; do
         if [[ $line == delet* ]]; then
             echo -e "${red}$line${ncl}"
@@ -24,8 +26,10 @@ function clean_rsync_verbose {
             :
         elif [[ $line == "sent "* ]] || [[ $line == "total size is"* ]]; then
             echo -e "\n"$line
+        elif [[ $line == "cannot "* ]]; then
+            echo -e "${red}$line${ncl}"
         else
-            echo -e "${grn}create or update" $line${ncl}
+            echo -e "${grn}creating or updating" $line${ncl}
         fi
     done
 }
@@ -35,22 +39,22 @@ function clean_rsync_verbose {
 #############################################################################
 
 # First check if help is required:
-if [ $1 == "--help" ] || [ $# -ne 2 ]; then
+if [ $1 == "--help" ] || [ $# -ne 4 ]; then
     usage;
 fi
 
 # Next, do a dry run of the rsync:
 mkdir $HOME/sync_temp;
-echo 'one' $1
-echo 'two' $2
 rsync \
     -nrvc \
     --delete \
     --exclude "*.err" \
     --exclude "*.out" \
     --exclude ".git" \
+    --exclude "*.report" \
+    --exclude "outputs/*" \
     $1 \
-    stampede:$2 > \
+    $3@$4:$2 > \
     $HOME/sync_temp/message.txt;
 
 # Print the changes to be made for review and approval:
@@ -67,17 +71,24 @@ if [ $ok == "y" ]; then
         --exclude "*.err" \
         --exclude "*.out" \
         --exclude ".git" \
+        --exclude "*.report" \
+        --exclude "outputs/*" \
         --progress \
         $1 \
-        stampede:$2 > \
+        $3@$4:$2 > \
         $HOME/sync_temp/message.txt;
 else
-    echo "Sync aborted.";
+    echo -e "${red}Sync aborted.${ncl}";
     rm -r $HOME/sync_temp;
     exit;
 fi
 
 # Wrap-up
-echo -e "\nDirectory $1 and subdirectories sync'd with remote.";
+rc=$?
+if [[ $rc == 0 ]]; then
+    echo -e "${grn}\nDirectory\n\t$1\nsync'd with remote.${ncl}";
+else
+    echo -e "${red}\nSync of directory\n\t$1\nwith remote failed.${ncl}";
+fi
 rm -r $HOME/sync_temp;
 

@@ -1,136 +1,137 @@
-" Title: hsftp
-" Description: Upload and download files through sftp
-" Usage: :Hupload and :Hdownload
-"        By default mapped to
-"        <leader>hsd (hsftp download) and
-"        <leader>hsu (hsftp upload)
-"        See README for more
-" Github: https://github.com/hesselbom/vim-hsftp
-" Author: Viktor Hesselbom (hesselbom.net)
-" License: MIT
+" Title: syncr
+" Description: Sync files local -> remote and vice-versa with rsync
+" Usage: :Sdownlf :Suplfil :Supldir
+"           <leader>sdf = sync current file remote -> local
+"           <leader>suf = sync current file local -> remote
+"           <leader>sud = sync current dir local -> remote
+"           See README for more
+" Github: https://github.com/jacob-ogre/vim-syncr
+" Author: Jacob Malcom
+" License: GPL2
+"
+" Much credit to Viktor Hesselbom for vim-hsftp, which was a starting point
+" for this plugin. Ideas further influenced by Will Bond, creator of the SFTP
+" package for Sublime Text 2/3.
 
-function! h:GetConf()
-  let conf = {}
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Read the configuration file
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! h:GetConfig()
+    let conf = {}
 
-  let l:configpath = expand('%:p:h')
-  let l:configfile = l:configpath . '/.hsftp'
-  let l:foundconfig = ''
-  if filereadable(l:configfile)
-    let l:foundconfig = l:configfile
-  else
-    while !filereadable(l:configfile)
-      let slashindex = strridx(l:configpath, '/')
-      if slashindex >= 0
-        let l:configpath = l:configpath[0:slashindex]
-        let l:configfile = l:configpath . '.hsftp'
-        let l:configpath = l:configpath[0:slashindex-1]
-        if filereadable(l:configfile)
-          let l:foundconfig = l:configfile
-          break
-        endif
-        if slashindex == 0 && !filereadable(l:configfile)
-          break
-        endif
-      else
-        break
-      endif
-    endwhile
-  endif
-
-  if strlen(l:foundconfig) > 0
-    let options = readfile(l:foundconfig)
-    for i in options
-      let vname = substitute(i[0:stridx(i, ' ')], '^\s*\(.\{-}\)\s*$', '\1', '')
-      let vvalue = substitute(i[stridx(i, ' '):], '^\s*\(.\{-}\)\s*$', '\1', '')
-      let conf[vname] = vvalue
-    endfor
-
-    let conf['local'] = fnamemodify(l:foundconfig, ':h:p') . '/'
-    let conf['localpath'] = expand('%:p')
-    let conf['remotepath'] = conf['remote'] . conf['localpath'][strlen(conf['local']):]
-  endif
-
-  return conf
-endfunction
-
-" function! h:SyncDownFile()
-"   let conf = h:GetConf()
-
-"   if has_key(conf, 'host')
-"     let action = printf('get %s %s', conf['remotepath'], conf['localpath'])
-"     let cmd = printf('expect -c "set timeout 5; spawn sftp -P %s %s@%s; expect \"*assword:\"; send %s\r; expect \"sftp>\"; send \"%s\r\"; expect -re \"100%\"; send \"exit\r\";"', conf['port'], conf['user'], conf['host'], conf['pass'], action)
-
-
-"     if conf['confirm_download'] == 1
-"       let choice = confirm('Download file?', "&Yes\n&No", 2)
-"       if choice != 1
-"         echo 'Canceled.'
-"         return
-"       endif
-"     endif
-
-"     execute '!' . cmd
-"   else
-"     echo 'Could not find .hsftp config file'
-"   endif
-" endfunction
-
-function! h:SyncUpFile()
-  let conf = h:GetConf()
-
-  if has_key(conf, 'host')
-    let action = printf('put %s %s', conf['localpath'], conf['remotepath'])
-    let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem %s %s', 
-                     \conf['localpath'], conf['remotepath'])
-
-    if conf['confirm_upload'] == 1
-      let choice = confirm('Upload file?', "&Yes\n&No", 2)
-      if choice != 1
-        echo 'Canceled.'
-        return
-      endif
+    let l:configpath = expand('%:p:h')
+    let l:configfile = l:configpath . '/.syncrconf'
+    let l:foundconfig = ''
+    if filereadable(l:configfile)
+        let l:foundconfig = l:configfile
+    else
+        while !filereadable(l:configfile)
+            let slashindex = strridx(l:configpath, '/')
+            if slashindex >= 0
+                let l:configpath = l:configpath[0:slashindex]
+                let l:configfile = l:configpath . '.syncrconf'
+                let l:configpath = l:configpath[0:slashindex-1]
+                if filereadable(l:configfile)
+                    let l:foundconfig = l:configfile
+                    break
+                endif
+                if slashindex == 0 && !filereadable(l:configfile)
+                    break
+                endif
+            else
+                break
+            endif
+        endwhile
     endif
 
-    execute '!' . cmd
-  else
-    echo 'Could not find .hsftp config file'
-  endif
+    if strlen(l:foundconfig) > 0
+        let options = readfile(l:foundconfig)
+        for i in options
+            let vname = substitute(i[0:stridx(i, ' ')], 
+                        \'^\s*\(.\{-}\)\s*$', '\1', '')
+            let vvalue = substitute(i[stridx(i, ' '):], 
+                        \'^\s*\(.\{-}\)\s*$', '\1', '')
+            let conf[vname] = vvalue
+        endfor
+
+        let conf['local'] = fnamemodify(l:foundconfig, ':h:p') . '/'
+        let conf['localpath'] = expand('%:p')
+        let conf['remotepath'] = conf['remote'] . 
+                    \conf['localpath'][strlen(conf['local']):]
+    endif
+    return conf
 endfunction
 
-function! h:SyncFolder()
-  let conf = h:GetConf()
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sync current file from local to remote.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! h:SyncDownFile()
+    let conf = h:GetConfig()
 
-  " execute "! echo " . file
-  " let conf['localpath'] = expand('%:p')
-  let action = "send pwd\r;"
-  if has_key(conf, 'host')
-    for file in split(glob('%:p:h/*'), '\n')
-      let conf['localpath'] = file
-      let conf['remotepath'] = conf['remote'] . conf['localpath'][strlen(conf['local']):]
-  
-      if conf['confirm_upload'] == 1
-        let choice = confirm('Upload file?', "&Yes\n&No", 2)
-        if choice != 1
-          echo 'Canceled.'
-          return
-        endif
-      endif
-      let action = action . printf('expect \"sftp>\"; send \"put %s %s\r\";', conf['localpath'], conf['remotepath'])
-    endfor
+    if has_key(conf, 'host')
+        let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_rem_loc_file 
+                    \%s %s %s %s', 
+                    \conf['remotepath'],
+                    \conf['localpath'], 
+                    \conf['user'],
+                    \conf['host'])
 
-    let cmd = printf('expect -c "set timeout 5; spawn sftp -P %s %s@%s; expect \"*assword:\"; send %s\r; %s expect -re \"100%\"; send \"exit\r\";"', conf['port'], conf['user'], conf['host'], conf['pass'], action)
+        execute '!' . cmd
+    else
+        echo "Could not find .syncrconf config file, which should be at the"
+        echo "root of the current file's repository."
+    endif
+endfunction
 
-    execute '!' . cmd
-  else
-    echo 'Could not find .hsftp config file'
-  endif
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sync current file from local to remote.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! h:SyncUpFile()
+    let conf = h:GetConfig()
+
+    if has_key(conf, 'host')
+        let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem_file 
+                    \%s %s %s %s', 
+                    \conf['localpath'], 
+                    \conf['remotepath'],
+                    \conf['user'],
+                    \conf['host'])
+
+        execute '!' . cmd
+    else
+        echo "Could not find .syncrconf config file, which should be at the"
+        echo "root of the current file's repository."
+    endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Sync current directory to remote.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! h:SyncUpDir()
+    let conf = h:GetConfig()
+
+    if has_key(conf, 'host')
+        let loc_dir_brk = split(conf['localpath'], '/')
+        let loc_dir = '/' . join(l:loc_dir_brk[0:len(l:loc_dir_brk)-2], '/') . '/'
+        let rem_dir_brk = split(conf['remotepath'], '/')
+        let rem_dir = '/' . join(l:rem_dir_brk[0:len(l:rem_dir_brk)-2], '/') . '/'
+        let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem_dir
+                    \ %s %s %s %s', 
+                    \l:loc_dir, 
+                    \l:rem_dir,
+                    \conf['user'],
+                    \conf['host'])
+        execute '!' . cmd
+    else
+        echo 'Could not find .syncrconf config file'
+    endif
 
 endfunction
 
-command! Sdownload call h:SyncDownFile()
-command! Supload call h:SyncUpFile()
-command! Supdir  call h:SyncFolder()
+command! Sdownlf call h:SyncDownFile()
+command! Suplfil call h:SyncUpFile()
+command! Supldir call h:SyncUpDir()
 
-nmap <leader>ssd :Sdownload<Esc>
-nmap <leader>ssu :Supload<Esc>
-nmap <leader>ssf :Supdir<Esc>
+nmap <leader>sdf :Sdownlf<Esc>
+nmap <leader>suf :Suplfil<Esc>
+nmap <leader>sud :Supldir<Esc>
