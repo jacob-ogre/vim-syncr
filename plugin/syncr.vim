@@ -126,7 +126,8 @@ function! h:SyncUpDir()
                     \conf['host'])
         execute '!' . cmd
     else
-        echo 'Could not find .syncrconf config file'
+        echo "Could not find .syncrconf config file, which should be at the"
+        echo "root of the current file's repository."
     endif
 endfunction
 
