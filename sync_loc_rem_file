@@ -1,0 +1,33 @@
+#! /bin/bash
+#
+# Sync a local file to a remote machine on same repository path.
+
+function usage {
+    echo -e "\nUSAGE:\n"
+    echo -e "\tsync_loc_rem_file <local_fil> <remote_fil> <user> <host>\n";
+    exit;
+}
+
+#############################################################################
+# The script itself...
+#############################################################################
+if [ $1 == "--help" ] || [ $# -ne 4 ]; then
+    usage;
+fi
+
+rsync \
+    -c \
+    $1 \
+    $3@$4:$2 &&
+
+rc=$?
+if [[ $rc == 0 ]]; then
+    grn='\x1b[0;32m'
+    ncl='\x1b[0m'
+    echo -e "${grn}\n\t$1 sync'd with remote.${ncl}";
+else
+    red='\x1b[0;31m'
+    ncl='\x1b[0m'
+    echo -r "${red}\n\tSync with remote failed.${ncl}";
+fi
+

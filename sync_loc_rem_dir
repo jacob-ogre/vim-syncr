@@ -1,0 +1,94 @@
+#! /bin/bash
+#
+# A bash script that syncs a local directory's contents to a remote target.
+
+# Colors for later:
+red='\x1b[0;31m'
+grn='\x1b[0;32m'
+ncl='\x1b[0m'
+
+#############################################################################
+# A couple of handler functions
+#############################################################################
+function usage {
+    echo -e "\nUSAGE:\n\tsync_loc_rem_dir <loc_dir> <rem_dir> <user> <host> \n";
+    echo -e "NOTE: Do NOT add a trailing '/' to paths.";
+    exit;
+}
+
+function clean_rsync_verbose {
+    # Simplify the rsync varbose output.
+    # NOTE: if on linux, change \x1b in color defs red,grn,ncl to \e
+    cat $1 | while read line; do
+        if [[ $line == delet* ]]; then
+            echo -e "${red}$line${ncl}"
+        elif [[ $line == building* ]] || [[ $line == "" ]]; then
+            :
+        elif [[ $line == "sent "* ]] || [[ $line == "total size is"* ]]; then
+            echo -e "\n"$line
+        elif [[ $line == "cannot "* ]]; then
+            echo -e "${red}$line${ncl}"
+        else
+            echo -e "${grn}creating or updating" $line${ncl}
+        fi
+    done
+}
+
+#############################################################################
+# The script itself...
+#############################################################################
+
+# First check if help is required:
+if [ $1 == "--help" ] || [ $# -ne 4 ]; then
+    usage;
+fi
+
+# Next, do a dry run of the rsync:
+mkdir $HOME/sync_temp;
+rsync \
+    -nrvc \
+    --delete \
+    --exclude "*.err" \
+    --exclude "*.out" \
+    --exclude ".git" \
+    --exclude "*.report" \
+    --exclude "outputs/*" \
+    $1 \
+    $3@$4:$2 > \
+    $HOME/sync_temp/message.txt;
+
+# Print the changes to be made for review and approval:
+echo -e "The following changes will be made:\n";
+clean_rsync_verbose $HOME/sync_temp/message.txt;
+echo -e "OK? [y/n]";
+read ok;
+
+# if OK, then commence with sync, else abort.
+if [ $ok == "y" ]; then
+    rsync \
+        -rvc \
+        --delete \
+        --exclude "*.err" \
+        --exclude "*.out" \
+        --exclude ".git" \
+        --exclude "*.report" \
+        --exclude "outputs/*" \
+        --progress \
+        $1 \
+        $3@$4:$2 > \
+        $HOME/sync_temp/message.txt;
+else
+    echo -e "${red}Sync aborted.${ncl}";
+    rm -r $HOME/sync_temp;
+    exit;
+fi
+
+# Wrap-up
+rc=$?
+if [[ $rc == 0 ]]; then
+    echo -e "${grn}\nDirectory\n\t$1\nsync'd with remote.${ncl}";
+else
+    echo -e "${red}\nSync of directory\n\t$1\nwith remote failed.${ncl}";
+fi
+rm -r $HOME/sync_temp;
+
