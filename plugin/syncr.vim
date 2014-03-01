@@ -63,7 +63,7 @@ function! h:GetConfig()
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Sync current file from local to remote.
+" Sync current file from remote to local
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! h:SyncDownFile()
     let conf = h:GetConfig()
