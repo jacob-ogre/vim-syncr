@@ -53,7 +53,7 @@ function! h:GetConf()
   return conf
 endfunction
 
-function! h:DownloadFile()
+function! h:SyncDownFile()
   let conf = h:GetConf()
 
   if has_key(conf, 'host')
@@ -75,7 +75,7 @@ function! h:DownloadFile()
   endif
 endfunction
 
-function! h:UploadFile()
+function! h:SyncUpFile()
   let conf = h:GetConf()
 
   if has_key(conf, 'host')
@@ -97,7 +97,7 @@ function! h:UploadFile()
   endif
 endfunction
 
-function! h:UploadFolder()
+function! h:SyncFolder()
   let conf = h:GetConf()
 
   " execute "! echo " . file
@@ -127,10 +127,10 @@ function! h:UploadFolder()
 
 endfunction
 
-command! Hdownload call h:DownloadFile()
-command! Hupload call h:UploadFile()
-command! Hupdir  call h:UploadFolder()
+command! Sdownload call h:SyncDownFile()
+command! Supload call h:SyncUpFile()
+command! Supdir  call h:SyncFolder()
 
-nmap <leader>hsd :Hdownload<Esc>
-nmap <leader>hsu :Hupload<Esc>
-nmap <leader>hsf :Hupdir<Esc>
+nmap <leader>ssd :Sdownload<Esc>
+nmap <leader>ssu :Supload<Esc>
+nmap <leader>ssf :Supdir<Esc>
