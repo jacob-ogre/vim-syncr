@@ -80,7 +80,8 @@ function! h:SyncUpFile()
 
   if has_key(conf, 'host')
     let action = printf('put %s %s', conf['localpath'], conf['remotepath'])
-    let cmd = printf('sync_loc_rem %s %s', conf['localpath'], conf['remotepath'])
+    let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem %s %s', 
+                     \conf['localpath'], conf['remotepath'])
 
     if conf['confirm_upload'] == 1
       let choice = confirm('Upload file?', "&Yes\n&No", 2)
