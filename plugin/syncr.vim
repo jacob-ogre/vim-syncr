@@ -139,5 +139,5 @@ command! Suplfil call h:SyncUpFile()
 command! Supldir call h:SyncUpDir()
 
 nmap <leader>sdf :Sdownlf<Esc>
-nmap <leader>suf :Suplfil<Esc>
-nmap <leader>sud :Supldir<Esc>
+nmap <leader>sf :Suplfil<Esc>
+nmap <leader>sd :Supldir<Esc>
