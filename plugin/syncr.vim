@@ -53,35 +53,34 @@ function! h:GetConf()
   return conf
 endfunction
 
-function! h:SyncDownFile()
-  let conf = h:GetConf()
+" function! h:SyncDownFile()
+"   let conf = h:GetConf()
 
-  if has_key(conf, 'host')
-    let action = printf('get %s %s', conf['remotepath'], conf['localpath'])
-    let cmd = printf('expect -c "set timeout 5; spawn sftp -P %s %s@%s; expect \"*assword:\"; send %s\r; expect \"sftp>\"; send \"%s\r\"; expect -re \"100%\"; send \"exit\r\";"', conf['port'], conf['user'], conf['host'], conf['pass'], action)
+"   if has_key(conf, 'host')
+"     let action = printf('get %s %s', conf['remotepath'], conf['localpath'])
+"     let cmd = printf('expect -c "set timeout 5; spawn sftp -P %s %s@%s; expect \"*assword:\"; send %s\r; expect \"sftp>\"; send \"%s\r\"; expect -re \"100%\"; send \"exit\r\";"', conf['port'], conf['user'], conf['host'], conf['pass'], action)
 
 
-    if conf['confirm_download'] == 1
-      let choice = confirm('Download file?', "&Yes\n&No", 2)
-      if choice != 1
-        echo 'Canceled.'
-        return
-      endif
-    endif
+"     if conf['confirm_download'] == 1
+"       let choice = confirm('Download file?', "&Yes\n&No", 2)
+"       if choice != 1
+"         echo 'Canceled.'
+"         return
+"       endif
+"     endif
 
-    execute '!' . cmd
-  else
-    echo 'Could not find .hsftp config file'
-  endif
-endfunction
+"     execute '!' . cmd
+"   else
+"     echo 'Could not find .hsftp config file'
+"   endif
+" endfunction
 
 function! h:SyncUpFile()
   let conf = h:GetConf()
 
   if has_key(conf, 'host')
     let action = printf('put %s %s', conf['localpath'], conf['remotepath'])
-    let cmd = printf('/Users/jacobmalcom/MaloneLab/Bash/utils/sync_loc_rem %s %s', conf['localpath'], conf['remotepath'])
-    " let cmd = printf('expect -c "set timeout 5; spawn sftp -P %s %s@%s; expect \"*assword:\"; send %s\r; expect \"sftp>\"; send \"%s\r\"; expect -re \"100%\"; send \"exit\r\";"', conf['port'], conf['user'], conf['host'], conf['pass'], action)
+    let cmd = printf('sync_loc_rem %s %s', conf['localpath'], conf['remotepath'])
 
     if conf['confirm_upload'] == 1
       let choice = confirm('Upload file?', "&Yes\n&No", 2)

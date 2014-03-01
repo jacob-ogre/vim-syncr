@@ -1,0 +1,83 @@
+#! /bin/bash
+#
+# A bash script that syncs a local directory's contents to a remote target.
+
+#############################################################################
+# A couple of handler functions
+#############################################################################
+function usage {
+    echo -e "\nUSAGE:\n\tsync_loc_rem <local_dir> <path_on_stampede>\n";
+    echo -e "NOTE: Do NOT add a trailing '\\' to paths.";
+    exit;
+}
+
+function clean_rsync_verbose {
+    # Simplify the rsync varbose output.
+    # NOTE: if on linux, change \x1b in color defs red,grn,ncl to \e
+    red='\x1b[0;31m'
+    grn='\x1b[0;32m'
+    ncl='\x1b[0m'
+    cat $1 | while read line; do
+        if [[ $line == delet* ]]; then
+            echo -e "${red}$line${ncl}"
+        elif [[ $line == building* ]] || [[ $line == "" ]]; then
+            :
+        elif [[ $line == "sent "* ]] || [[ $line == "total size is"* ]]; then
+            echo -e "\n"$line
+        else
+            echo -e "${grn}create or update" $line${ncl}
+        fi
+    done
+}
+
+#############################################################################
+# The script itself...
+#############################################################################
+
+# First check if help is required:
+if [ $1 == "--help" ] || [ $# -ne 2 ]; then
+    usage;
+fi
+
+# Next, do a dry run of the rsync:
+mkdir $HOME/sync_temp;
+echo 'one' $1
+echo 'two' $2
+rsync \
+    -nrvc \
+    --delete \
+    --exclude "*.err" \
+    --exclude "*.out" \
+    --exclude ".git" \
+    $1 \
+    stampede:$2 > \
+    $HOME/sync_temp/message.txt;
+
+# Print the changes to be made for review and approval:
+echo -e "The following changes will be made:\n";
+clean_rsync_verbose $HOME/sync_temp/message.txt;
+echo -e "OK? [y/n]";
+read ok;
+
+# if OK, then commence with sync, else abort.
+if [ $ok == "y" ]; then
+    rsync \
+        -rvc \
+        --delete \
+        --exclude "*.err" \
+        --exclude "*.out" \
+        --exclude ".git" \
+        --progress \
+        $1 \
+        stampede:$2 > \
+        $HOME/sync_temp/message.txt;
+else
+    echo "Sync aborted.";
+    rm -r $HOME/sync_temp;
+    exit;
+fi
+
+# Wrap-up
+echo -e "\nDirectory $1 and subdirectories sync'd with remote.";
+rm -r $HOME/sync_temp;
+
