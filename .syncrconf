@@ -1,0 +1,8 @@
+host   <address.of.host>
+user   <username>
+pass   
+port   22
+remote </path/to/remote>
+confirm_download <0,1>
+confirm_upload <0,1>
+exclude <nothing here yet>

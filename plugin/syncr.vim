@@ -10,8 +10,11 @@
 " License: GPL2
 "
 " Much credit to Viktor Hesselbom for vim-hsftp, which was a starting point
-" for this plugin. Ideas further influenced by Will Bond, creator of the SFTP
-" package for Sublime Text 2/3.
+" for this plugin, under an MIT license (see
+" http://github.com/hesselbom/vim-hsftp).
+"
+" Ideas further influenced by Will Bond, creator of the SFTP
+" package for Sublime Text 2/3. 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Read the configuration file
@@ -125,9 +128,11 @@ function! h:SyncUpDir()
     else
         echo 'Could not find .syncrconf config file'
     endif
-
 endfunction
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" And now for the commands and the mappings:
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 command! Sdownlf call h:SyncDownFile()
 command! Suplfil call h:SyncUpFile()
 command! Supldir call h:SyncUpDir()
