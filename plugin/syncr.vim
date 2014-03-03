@@ -13,8 +13,39 @@
 " for this plugin, under an MIT license (see
 " http://github.com/hesselbom/vim-hsftp).
 "
-" Ideas further influenced by Will Bond, creator of the SFTP
-" package for Sublime Text 2/3. 
+" Ideas further influenced by Will Bond, creator of the SFTP package for 
+" Sublime Text 2/3. 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Set the configuration file to use.
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! h:SetRemote()
+    let l:config_path = expand('%:p:h')
+    let l:config_files = l:config_path . '/.syncrconf*'
+    let l:config_base = ''
+    if globpath(l:config_files)
+        let l:config_base = l:config_files
+    else
+        while !globpath(l:config_files)
+            let slash_index = strridx(l:config_path, '/')
+            if slash_index >= 0
+                let l:config_path = l:config_path[0:slash_index]
+                let l:config_path = l:config_path . '/.syncrconf*'
+                let l:config_path = l:config_path[0:slash_index-1]
+                if globpath(l:config_path)
+                    let l:config_base = l:config_path
+                    break
+                endif
+                if slash_index == 0 && !globpath(l:config_path)
+                    break
+                endif
+            else
+                break
+            endif
+        endwhile
+    endif
+    echo l:config_base
+    " let l:OptCommand = printf('ls -la %s 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Read the configuration file
