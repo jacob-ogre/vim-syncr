@@ -46,6 +46,7 @@ function! h:SetRemote()
     endif
     echo l:config_base
     " let l:OptCommand = printf('ls -la %s 
+endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Read the configuration file
