@@ -169,6 +169,7 @@ endfunction
 command! Sdownlf call h:SyncDownFile()
 command! Suplfil call h:SyncUpFile()
 command! Supldir call h:SyncUpDir()
+command! Setr call h:SetRemote()
 
 nmap <leader>sdf :Sdownlf<Esc>
 nmap <leader>sf :Suplfil<Esc>
