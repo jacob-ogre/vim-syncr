@@ -20,32 +20,10 @@
 " Set the configuration file to use.
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! h:SetRemote()
-    let l:config_path = expand('%:p:h')
-    let l:config_files = l:config_path . '/.syncrconf*'
-    let l:config_base = ''
-    if globpath(l:config_files)
-        let l:config_base = l:config_files
-    else
-        while !globpath(l:config_files)
-            let slash_index = strridx(l:config_path, '/')
-            if slash_index >= 0
-                let l:config_path = l:config_path[0:slash_index]
-                let l:config_path = l:config_path .  '/.syncrconf*'
-                let l:config_path = l:config_path[0:slash_index-1]
-                if globpath(l:config_path)
-                    let l:config_base = l:config_path
-                    break
-                endif
-                if slash_index == 0 && !globpath(l:config_path) 
-                    break
-                endif
-            else
-                break
-            endif
-        endwhile
-    endif
-    echo l:config_base
-    " let l:OptCommand = printf('ls -la %s 
+    " call a bash script that uses sed to replace '/.syncrconf' with
+    " appropriate file, which should use the suffix as an identifier
+    "
+    " Do I need another .vim file to re-load the plugin after updating???
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -169,7 +147,7 @@ endfunction
 command! Sdownlf call h:SyncDownFile()
 command! Suplfil call h:SyncUpFile()
 command! Supldir call h:SyncUpDir()
-command! Setr call h:SetRemote()
+" command! Setr call h:SetRemote()
 
 nmap <leader>sdf :Sdownlf<Esc>
 nmap <leader>sf :Suplfil<Esc>
