@@ -50,9 +50,8 @@ rsync \
     --delete \
     --exclude "*.err" \
     --exclude "*.out" \
-    --exclude ".git" \
-    --exclude "*.report" \
-    --exclude "outputs/*" \
+    --exclude ".*" \
+    --exclude "outputs" \
     $1 \
     $3@$4:$2 > \
     $HOME/sync_temp/message.txt;
@@ -70,9 +69,8 @@ if [ $ok == "y" ]; then
         --delete \
         --exclude "*.err" \
         --exclude "*.out" \
-        --exclude ".git" \
-        --exclude "*.report" \
-        --exclude "outputs/*" \
+        --exclude ".*" \
+        --exclude "outputs" \
         --progress \
         $1 \
         $3@$4:$2 > \
