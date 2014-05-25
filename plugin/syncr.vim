@@ -22,8 +22,7 @@
 function! SetRemote()
     " call a bash script that uses sed to replace '/.syncrconf' with
     " appropriate file, which should use the suffix as an identifier
-    "
-    " Do I need another .vim file to re-load the plugin after updating???
+    
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

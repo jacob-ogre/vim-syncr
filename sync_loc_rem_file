@@ -19,8 +19,7 @@ if [ $1 == "--help" ] || [ $# -ne 4 ]; then
     usage;
 fi
 
-rsync \
-    -c \
+rsync -c \
     --exclude ".syncrconf*" \
     $1 \
     $3@$4:$2 &&
