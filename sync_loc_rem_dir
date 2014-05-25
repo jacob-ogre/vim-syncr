@@ -51,6 +51,8 @@ rsync \
     --exclude "*.err" \
     --exclude "*.out" \
     --exclude ".*" \
+    --exclude ".syncr" \
+    --exclude "*.pyc" \
     --exclude "outputs" \
     $1 \
     $3@$4:$2 > \
@@ -70,6 +72,8 @@ if [ $ok == "y" ]; then
         --exclude "*.err" \
         --exclude "*.out" \
         --exclude ".*" \
+        --exclude ".syncrconf*" \
+        --exclude "*.pyc" \
         --exclude "outputs" \
         --progress \
         $1 \
