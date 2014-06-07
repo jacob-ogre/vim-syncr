@@ -52,8 +52,9 @@ very well, ending up with something like:
         |          |             |
      remote A   remote B      remote C
 ```
-Vim-syncr is not as full-featured as Sublime Text SFTP, but it works for the 
-Vimmers in the group.
+That is, the remote copies are not git repos, just sync'd versions of the local
+git repos. Vim-syncr is not as full-featured as Sublime Text SFTP, but it works 
+for the Vimmers in the group.
 
 ## How?
 As one might guess, vim-syncr uses `rsync` to perform synchronization between a
