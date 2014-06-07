@@ -14,15 +14,52 @@ that are mapped by default to:
 * (**s**ync **d**own **f**ile) -> `<leader>sdf` 
 
 ## Why?
-Because coding is often more efficient when working from a local repository,
-but changes often need to be pushed regularly to remote machines. Git
-commit/push/pull/fetch/etc. is fine, but takes additional steps.
+Our workflow looks something like this:
+
+```
+          worker A   worker B ...
+               \       /
+        --------------------------
+        |          |             |
+     remote A   remote B      remote C
+```
+
+Each of the remotes is suited to a particular type of analysis, e.g., remote A
+is a super computing cluster where 1000s of nodes can be requested for large 
+analyses but can have long wait times both for the analysis to start and can
+become very laggy when trying to edit remotely. Remotes B and C vary in their
+number of processors, RAM, etc., but allow short time-to-run for other analyses.
+As a result of these differences it's normal to jump from remote to remote many
+times per day, but we want the current code at each remote. While we could set
+each remote with its own git repo--commit/push/pull/fetch/etc. is fine, but 
+takes additional steps--it can lead to silly mistakes when one thinks they're 
+on version B when they forgot to pull and actually ran version A. Allegedly. 
+Because I've never done that. Maybe once. In addition, connectivity to B and C 
+can be a little wonky, again leading to laggy coding.
+
+Our solution is that each person in the group has a single git repo on their 
+local computer and a copy of the reposity is maintained on their accounts on the
+remotes. Some folks use Vim, some use Sublime Text, but in both cases we just 
+sync the local changes to the remote. SFTP exists for Sublime Text and works 
+very well, ending up with something like:
+
+```
+               GitHub repo --------- other worker's local repos...
+                   |
+             local git repo
+                   |
+        --------------------------
+        |          |             |
+     remote A   remote B      remote C
+```
+Vim-syncr is not as full-featured as Sublime Text SFTP, but it works for the 
+Vimmers in the group.
 
 ## How?
 As one might guess, vim-syncr uses `rsync` to perform synchronization between a
 local repository and a remote copy. The remote machine information is contained
 in a configuration file saved at the root of the "project" directory; see
-.syncrconf for illustration. The current bash functions that drive the sync
+.syncrconf for an example. The current bash functions that drive the sync
 operations are hard-coded to exclude certain files (see TODO, below). Note that
 this uses the -c flag of rsync to checksum the files rather than just comparing
 time stamps.
@@ -32,20 +69,21 @@ time stamps.
 1. Set up SSH login on the remote machine, if possible; otherwise, you will have
    to enter your password for each sync.
 2. Use [Vundle] (https://github.com/gmarik/Vundle.vim) to clone vim-syncr into
-   ~/.vim/bundle, or whereever you have your plugins set up.
+   ~/.vim/bundle, or where ever you have your plugins set up. Manual cloning 
+   will work just fine as well.
 3. Copy the .syncrconf from ~/.vim/bundle/vim-syncr/ to the root directory of 
    your active repository(ies).
 4. Edit the .syncrconf as necessary to make the connections work.
 5. If you work with the same repo on multiple remote machines, make additional
-   copies of .syncrconf but named as, e.g., '_server2' and edit the settings
-   as needed. The serv_switch script (see below) permits easy switching 
-   between remote machines from within vim, and will rename the files given
-   the "name" entry in .syncrconf.
+   copies of .syncrconf but named as, e.g., `syncrconf_server2` and edit the 
+   settings as needed. The `serv_switch` script (see below) permits easy 
+   switching between remote machines from within vim, and will rename the files
+   given the "name" entry in .syncrconf.
 6. (optional) Add `autocmd BufWritePost * :Suplfil` to your .vimrc to enable 
    automatic upload to the remote server on each :write. Also works with :Gw if
    using [Fugitive] (https://github.com/tpope/vim-fugitive).
 
-### Remote switching
+### Switching the remote target
 1. Copy `serv_switch` from ~/.vim/bundle/vim-syncr to the root of your working 
    repository, which will enable simple switching between remote machines.
 2. (optional) add `map <Leader>sw :!/path/to/work/repo/serv_switch<cr>` to your 
@@ -60,9 +98,10 @@ time stamps.
    repository root (e.g., .syncrconf), then using `<leader>sd` to perform a 
    recursive sync.
 
-### Remote switching
-1. If you added <Leader>sw to your .vimrc, then `,sw` will spawn a dialog 
-   providing the "name" field of all .syncrconf* files in the repo root.
+### Switching the remote target
+1. If you added <Leader>sw to your .vimrc, then and if ',' is your <Leader>, 
+   `,sw` will spawn a dialog providing the "name" field of all .syncrconf* 
+   files in the repo root.
 2. Choose the number of the remote machine you want to which you want to sync
    and the change will be made.
 
@@ -74,9 +113,6 @@ when working in a large repository where only a small number of files (and/or a
 small portion of a few files) might change, syncing tends to be faster. There's
 also a little more control (and highlighting!) using vim-syncr...but more could
 be done to make it even more flexible.
-
-One option to consider is making `:Suplfil` an autocmd so that for every :write
-(BufWrite or similar event) the file is pushed to the remote machine.
 
 ## TODO (in general order of importance)
 * Add rsync --exclude items to config file for more flexibility than the
