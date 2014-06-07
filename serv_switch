@@ -1,0 +1,57 @@
+#!/usr/bin/python
+# Switches the server config file for vim-syncr
+# Copyright (C) 2014 Jacob Malcom, jmalcom@uconn.edu
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+import glob
+import os
+import sys
+
+def get_name(f):
+    for line in open(f):
+        if line.startswith("name"):
+            return line.rstrip().split()[-1]
+
+def switch(cur, cur_nam, new):
+    old_nam = cur + "_" + cur_nam
+    os.rename(cur, old_nam)
+    new_dat = new.split("/")
+    new_nam = "/".join(new_dat[:-1]) + "/" + new_dat[-1].split("_")[0]
+    os.rename(new, new_nam)
+
+def main():
+    servers, cnt = {}, 0
+    for fil in glob.glob(os.path.expanduser("~") + "/MaloneLab/.syncrconf*"):
+        if fil == os.path.expanduser("~") + "/MaloneLab/.syncrconf":
+            cur_serv = fil
+            cur_serv_name = get_name(fil)
+        cnt += 1
+        for line in open(fil):
+            if line.startswith("name"):
+                servers[fil] = line.rstrip().split()[-1]
+
+    print("\nAvailable servers:")
+    serv_keys = servers.keys()
+    for i in range(len(serv_keys)):
+        print("\t%s %s" % (i, servers[serv_keys[i]]))
+
+    choice = int(input("\nWhich server to choose?\t"))
+    if servers[serv_keys[choice]] == cur_serv_name:
+        print("Server not changed.")
+        sys.exit()
+    switch(cur_serv, cur_serv_name, serv_keys[choice])
+
+if __name__ == '__main__':
+    main()
