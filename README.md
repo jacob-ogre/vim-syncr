@@ -27,16 +27,28 @@ operations are hard-coded to exclude certain files (see TODO, below). Note that
 this uses the -c flag of rsync to checksum the files rather than just comparing
 time stamps.
 
-### Setup...
+### Setup
 1. Set up SSH login on the remote machine, if possible; otherwise, you will have
    to enter your password for each sync.
 2. Use [Vundle] (https://github.com/gmarik/Vundle.vim) to clone vim-syncr into
    ~/.vim/bundle, or whereever you have your plugins set up.
-3. Copy the .syncrconf from ~/.vim/bundle/vim-syncr/ to the root directory of a
-   code repository that is present locally and on a remote machine.
+3. Copy the .syncrconf from ~/.vim/bundle/vim-syncr/ to the root directory of 
+   your active repository(ies).
 4. Edit the .syncrconf as necessary to make the connections work.
-5. Copy `serv_switch` from ~/.vim/bundle/vim-syncr to the root of your working 
+5. If you work with the same repo on multiple remote machines, make additional
+   copies of .syncrconf but named as, e.g., '_server2' and edit the settings
+   as needed. The serv_switch script (see below) permits easy switching 
+   between remote machines from within vim, and will rename the files given
+   the "name" entry in .syncrconf.
+6. (optional) Add `autocmd BufWritePost * :Suplfil` to your .vimrc to enable 
+   automatic upload to the remote server on each :write. Also works with :Gw if
+   using [Fugitive] (https://github.com/tpope/vim-fugitive).
+
+## Remote switching
+1. Copy `serv_switch` from ~/.vim/bundle/vim-syncr to the root of your working 
    repository, which will enable simple switching between remote machines.
+2. (optional) add `map <Leader>sw :!/path/to/work/repo/serv_switch<cr>` to your 
+   .vimrc to make remote server switching easy.
 
 ### Usage
 ## Basic operations
@@ -47,7 +59,11 @@ time stamps.
    repository root (e.g., .syncrconf), then using `<leader>sd` to perform a 
    recursive sync.
 
-## Server switching
+## Remote switching
+1. If you added <Leader>sw to your .vimrc, then `,sw` will spawn a dialog 
+   providing the "name" field of all .syncrconf* files in the repo root.
+2. Choose the number of the remote machine you want to which you want to sync
+   and the change will be made.
 
 ## Other options?
 `sftp` can also do the job, particularly for single files, and you might check out
@@ -62,7 +78,6 @@ One option to consider is making `:Suplfil` an autocmd so that for every :write
 (BufWrite or similar event) the file is pushed to the remote machine.
 
 ## TODO (in general order of importance)
-* Make switching between remote targets feasible and smooth.
 * Add rsync --exclude items to config file for more flexibility than the
   hard-coded excludes currently in-place.
 * Other things, I'm sure...
