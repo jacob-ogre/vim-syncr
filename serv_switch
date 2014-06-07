@@ -20,11 +20,13 @@ import os
 import sys
 
 def get_name(f):
+    "Return the name of the remote machine described in file f."
     for line in open(f):
         if line.startswith("name"):
             return line.rstrip().split()[-1]
 
 def switch(cur, cur_nam, new):
+    "Rename the .syncrconf files to make the chosen remote active."
     old_nam = cur + "_" + cur_nam
     os.rename(cur, old_nam)
     new_dat = new.split("/")
@@ -32,6 +34,7 @@ def switch(cur, cur_nam, new):
     os.rename(new, new_nam)
 
 def main():
+    "Facilitate simple remote machine switching using vim-syncr."
     servers, cnt = {}, 0
     for fil in glob.glob(os.path.expanduser("~") + "/MaloneLab/.syncrconf*"):
         if fil == os.path.expanduser("~") + "/MaloneLab/.syncrconf":
