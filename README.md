@@ -28,6 +28,7 @@ this uses the -c flag of rsync to checksum the files rather than just comparing
 time stamps.
 
 ### Setup
+## Basic operation
 1. Set up SSH login on the remote machine, if possible; otherwise, you will have
    to enter your password for each sync.
 2. Use [Vundle] (https://github.com/gmarik/Vundle.vim) to clone vim-syncr into
