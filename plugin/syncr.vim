@@ -19,17 +19,16 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set the configuration file to use.
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! h:SetRemote()
+function! SetRemote()
     " call a bash script that uses sed to replace '/.syncrconf' with
     " appropriate file, which should use the suffix as an identifier
-    "
-    " Do I need another .vim file to re-load the plugin after updating???
+    
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Read the configuration file
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! h:GetConfig()
+function! GetConfig()
     let conf = {}
 
     let l:configpath = expand('%:p:h')
@@ -78,8 +77,8 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sync current file from remote to local
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! h:SyncDownFile()
-    let conf = h:GetConfig()
+function! SyncDownFile()
+    let conf = GetConfig()
 
     if has_key(conf, 'host')
         let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_rem_loc_file 
@@ -99,8 +98,8 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sync current file from local to remote.
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! h:SyncUpFile()
-    let conf = h:GetConfig()
+function! SyncUpFile()
+    let conf = GetConfig()
 
     if has_key(conf, 'host')
         let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem_file 
@@ -120,8 +119,8 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sync current directory to remote.
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! h:SyncUpDir()
-    let conf = h:GetConfig()
+function! SyncUpDir()
+    let conf = GetConfig()
 
     if has_key(conf, 'host')
         let loc_dir_brk = split(conf['localpath'], '/')
@@ -144,10 +143,10 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " And now for the commands and the mappings:
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-command! Sdownlf call h:SyncDownFile()
-command! Suplfil call h:SyncUpFile()
-command! Supldir call h:SyncUpDir()
-" command! Setr call h:SetRemote()
+command! Sdownlf call SyncDownFile()
+command! Suplfil call SyncUpFile()
+command! Supldir call SyncUpDir()
+" command! Setr call SetRemote()
 
 nmap <leader>sdf :Sdownlf<Esc>
 nmap <leader>sf :Suplfil<Esc>

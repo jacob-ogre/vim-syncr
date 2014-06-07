@@ -21,6 +21,7 @@ fi
 
 rsync \
     -c \
+    --exclude ".syncrconf*" \
     $3@$4:$1 \
     $2 &&
 
