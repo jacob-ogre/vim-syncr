@@ -9,8 +9,8 @@ vim-syncr currently includes just three functions:
 * sync current file remote -> local = `:Sdownlf` 
 
 that are mapped by default to:
-* (**s**ync **u**p **f**ile) -> `<leader>suf` 
-* (**s**ync **u**p **d**irectory) -> `<leader>sud` 
+* (**s**ync **u**p **f**ile) -> `<leader>sf` 
+* (**s**ync **u**p **d**irectory) -> `<leader>sd` 
 * (**s**ync **d**own **f**ile) -> `<leader>sdf` 
 
 ## Why?
@@ -35,11 +35,19 @@ time stamps.
 3. Copy the .syncrconf from ~/.vim/bundle/vim-syncr/ to the root directory of a
    code repository that is present locally and on a remote machine.
 4. Edit the .syncrconf as necessary to make the connections work.
-5. Open and edit a file in the repository, :w, and `<leader>suf`.
-6. Alternately, alter multiple files in a directory, :w, and `<leader>sud` to
+5. Copy `serv_switch` from ~/.vim/bundle/vim-syncr to the root of your working 
+   repository, which will enable simple switching between remote machines.
+
+### Usage
+## Basic operations
+1. Open and edit a file in your working repository, then :w, and last `<leader>sf`.
+2. Alternately, alter multiple files in a directory, :w, and `<leader>sd` to
    sync the entire directory (i.e., the parts that have changed).
-7. An entire directory can be synced by opening the .syncrconf at the repo root,
-   then using `<leader>sud` to perform a recursive sync.
+3. An entire repository can be synced by opening a file at the working 
+   repository root (e.g., .syncrconf), then using `<leader>sd` to perform a 
+   recursive sync.
+
+## Server switching
 
 ## Other options?
 `sftp` can also do the job, particularly for single files, and you might check out
@@ -51,7 +59,7 @@ also a little more control (and highlighting!) using vim-syncr...but more could
 be done to make it even more flexible.
 
 One option to consider is making `:Suplfil` an autocmd so that for every :write
-(BufWrite or similar event) the file is pushed to the remote machin
+(BufWrite or similar event) the file is pushed to the remote machine.
 
 ## TODO (in general order of importance)
 * Make switching between remote targets feasible and smooth.
