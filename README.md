@@ -27,8 +27,8 @@ operations are hard-coded to exclude certain files (see TODO, below). Note that
 this uses the -c flag of rsync to checksum the files rather than just comparing
 time stamps.
 
-### Setup
-## Basic operation
+## Setup
+### Basic operation
 1. Set up SSH login on the remote machine, if possible; otherwise, you will have
    to enter your password for each sync.
 2. Use [Vundle] (https://github.com/gmarik/Vundle.vim) to clone vim-syncr into
@@ -45,14 +45,14 @@ time stamps.
    automatic upload to the remote server on each :write. Also works with :Gw if
    using [Fugitive] (https://github.com/tpope/vim-fugitive).
 
-## Remote switching
+### Remote switching
 1. Copy `serv_switch` from ~/.vim/bundle/vim-syncr to the root of your working 
    repository, which will enable simple switching between remote machines.
 2. (optional) add `map <Leader>sw :!/path/to/work/repo/serv_switch<cr>` to your 
    .vimrc to make remote server switching easy.
 
-### Usage
-## Basic operations
+## Usage
+### Basic operations
 1. Open and edit a file in your working repository, then :w, and last `<leader>sf`.
 2. Alternately, alter multiple files in a directory, :w, and `<leader>sd` to
    sync the entire directory (i.e., the parts that have changed).
@@ -60,7 +60,7 @@ time stamps.
    repository root (e.g., .syncrconf), then using `<leader>sd` to perform a 
    recursive sync.
 
-## Remote switching
+### Remote switching
 1. If you added <Leader>sw to your .vimrc, then `,sw` will spawn a dialog 
    providing the "name" field of all .syncrconf* files in the repo root.
 2. Choose the number of the remote machine you want to which you want to sync
