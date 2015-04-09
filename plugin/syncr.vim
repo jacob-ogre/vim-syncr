@@ -80,15 +80,24 @@ endfunction
 function! SyncDownFile()
     let conf = GetConfig()
 
+    if has_key(conf, 'quiet') && conf['quiet']
+        let quiet = 'silent '
+        let quiet_arg = 'false'
+    else
+        let quiet = ''
+        let quiet_arg = 'true'
+    endif
+
     if has_key(conf, 'host')
         let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_rem_loc_file 
-                    \%s %s %s %s', 
+                    \%s %s %s %s %s',
                     \conf['remotepath'],
                     \conf['localpath'], 
                     \conf['user'],
-                    \conf['host'])
+                    \conf['host'],
+                    \quiet_arg)
 
-        execute '!' . cmd
+        execute quiet . '!' . cmd
     else
         echo "Could not find .syncrconf config file, which should be at the"
         echo "root of the current file's repository."
@@ -101,15 +110,24 @@ endfunction
 function! SyncUpFile()
     let conf = GetConfig()
 
+    if has_key(conf, 'quiet') && conf['quiet']
+        let quiet = 'silent '
+        let quiet_arg = 'false'
+    else
+        let quiet = ''
+        let quiet_arg = 'true'
+    endif
+
     if has_key(conf, 'host')
         let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem_file 
-                    \%s %s %s %s', 
+                    \%s %s %s %s %s',
                     \conf['localpath'], 
                     \conf['remotepath'],
                     \conf['user'],
-                    \conf['host'])
+                    \conf['host'],
+                    \quiet_arg)
 
-        execute '!' . cmd
+        execute quiet . '!' . cmd
     else
         echo "Could not find .syncrconf config file, which should be at the"
         echo "root of the current file's repository."
@@ -122,18 +140,28 @@ endfunction
 function! SyncUpDir()
     let conf = GetConfig()
 
+    if has_key(conf, 'quiet') && conf['quiet']
+        let quiet = 'silent '
+        let quiet_arg = 'false'
+    else
+        let quiet = ''
+        let quiet_arg = 'true'
+    endif
+
     if has_key(conf, 'host')
         let loc_dir_brk = split(conf['localpath'], '/')
         let loc_dir = '/' . join(l:loc_dir_brk[0:len(l:loc_dir_brk)-2], '/') . '/'
         let rem_dir_brk = split(conf['remotepath'], '/')
         let rem_dir = '/' . join(l:rem_dir_brk[0:len(l:rem_dir_brk)-2], '/') . '/'
         let cmd = printf('$HOME/.vim/bundle/vim-syncr/sync_loc_rem_dir
-                    \ %s %s %s %s', 
+                    \ %s %s %s %s %s',
                     \l:loc_dir, 
                     \l:rem_dir,
                     \conf['user'],
-                    \conf['host'])
-        execute '!' . cmd
+                    \conf['host'],
+                    \quiet_arg)
+
+        execute quiet . '!' . cmd
     else
         echo "Could not find .syncrconf config file, which should be at the"
         echo "root of the current file's repository."

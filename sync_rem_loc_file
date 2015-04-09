@@ -8,14 +8,14 @@ ncl='\x1b[0m'
 
 function usage {
     echo -e "\nUSAGE:\n"
-    echo -e "\tsync_loc_rem_file <local_fil> <remote_fil> <user> <host>\n";
+    echo -e "\tsync_loc_rem_file <local_fil> <remote_fil> <user> <host> <quiet>\n";
     exit;
 }
 
 #############################################################################
 # The script itself...
 #############################################################################
-if [ $1 == "--help" ] || [ $# -ne 4 ]; then
+if [ $1 == "--help" ] || [ $# -ne 5 ]; then
     usage;
 fi
 
@@ -27,7 +27,7 @@ rsync \
 
 rc=$?
 if [[ $rc == 0 ]]; then
-    echo -e "${grn}\nFile:\n\t$1\nsync'd locally from remote.${ncl}";
+    $5 && echo -e "${grn}\nFile:\n\t$1\nsync'd locally from remote.${ncl}";
 else
     echo -e "${red}\nSync with remote failed for\n\t$1.${ncl}";
 fi
