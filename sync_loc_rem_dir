@@ -11,7 +11,7 @@ ncl='\x1b[0m'
 # A couple of handler functions
 #############################################################################
 function usage {
-    echo -e "\nUSAGE:\n\tsync_loc_rem_dir <loc_dir> <rem_dir> <user> <host> \n";
+    echo -e "\nUSAGE:\n\tsync_loc_rem_dir <loc_dir> <rem_dir> <user> <host> <quiet>\n";
     echo -e "NOTE: Do NOT add a trailing '/' to paths.";
     exit;
 }
@@ -39,7 +39,7 @@ function clean_rsync_verbose {
 #############################################################################
 
 # First check if help is required:
-if [ $1 == "--help" ] || [ $# -ne 4 ]; then
+if [ $1 == "--help" ] || [ $# -ne 5 ]; then
     usage;
 fi
 
@@ -88,7 +88,7 @@ fi
 # Wrap-up
 rc=$?
 if [[ $rc == 0 ]]; then
-    echo -e "${grn}\nDirectory\n\t$1\nsync'd with remote.${ncl}";
+    $5 && echo -e "${grn}\nDirectory\n\t$1\nsync'd with remote.${ncl}";
 else
     echo -e "${red}\nSync of directory\n\t$1\nwith remote failed.${ncl}";
 fi
