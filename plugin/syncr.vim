@@ -99,8 +99,10 @@ function! SyncDownFile()
 
         execute quiet . '!' . cmd
     else
-        echo "Could not find .syncrconf config file, which should be at the"
-        echo "root of the current file's repository."
+        if quiet_arg != 'true'
+            echo "Could not find .syncrconf config file, which should be at the"
+            echo "root of the current file's repository."
+        endif
     endif
 endfunction
 
@@ -129,8 +131,10 @@ function! SyncUpFile()
 
         execute quiet . '!' . cmd
     else
-        echo "Could not find .syncrconf config file, which should be at the"
-        echo "root of the current file's repository."
+        if quiet_arg != 'true'
+            echo "Could not find .syncrconf config file, which should be at the"
+            echo "root of the current file's repository."
+        endif
     endif
 endfunction
 
@@ -163,8 +167,10 @@ function! SyncUpDir()
 
         execute quiet . '!' . cmd
     else
-        echo "Could not find .syncrconf config file, which should be at the"
-        echo "root of the current file's repository."
+        if quiet_arg != 'true'
+            echo "Could not find .syncrconf config file, which should be at the"
+            echo "root of the current file's repository."
+        endif
     endif
 endfunction
 
