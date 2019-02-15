@@ -35,9 +35,10 @@ def switch(cur, cur_nam, new):
 
 def main():
     "Facilitate simple remote machine switching using vim-syncr."
+    repository_directory = os.path.dirname(os.path.realpath(__file__))
     servers, cnt = {}, 0
-    for fil in glob.glob(os.path.expanduser("~") + "/MaloneLab/.syncrconf*"):
-        if fil == os.path.expanduser("~") + "/MaloneLab/.syncrconf":
+    for fil in glob.glob(os.path.join(repository_directory, ".syncrconf*")):
+        if fil == os.path.join(repository_directory, ".syncrconf"):
             cur_serv = fil
             cur_serv_name = get_name(fil)
         cnt += 1
@@ -49,6 +50,8 @@ def main():
     serv_keys = servers.keys()
     for i in range(len(serv_keys)):
         print("\t%s %s" % (i, servers[serv_keys[i]]))
+    if len(serv_keys) == 0
+        print("No servers found")
 
     choice = int(input("\nWhich server to choose?\t"))
     if servers[serv_keys[choice]] == cur_serv_name:
